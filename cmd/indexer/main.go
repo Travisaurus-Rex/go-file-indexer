@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -27,6 +28,20 @@ func main() {
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"status":"ok"}`))
+	})
+
+	mux.HandleFunc("/config", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		data, err := json.Marshal(cfg)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(`{"error":"failed to encode config"}`))
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write(data)
 	})
 
 	srv := &http.Server{
