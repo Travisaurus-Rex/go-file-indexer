@@ -2,16 +2,22 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/Travisaurus-Rex/go-file-indexer/internal/config"
 )
 
 func main() {
+	cfg := config.Load()
+
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	logger.Info("configuration loaded", "port", cfg.Port, "scan_path", cfg.ScanPath)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
@@ -24,7 +30,7 @@ func main() {
 	})
 
 	srv := &http.Server{
-		Addr:    ":8000",
+		Addr:    ":" + cfg.Port,
 		Handler: mux,
 	}
 
@@ -46,4 +52,6 @@ func main() {
 	} else {
 		logger.Info("server stopped cleanly")
 	}
+
+	fmt.Println("Selamat jalan, mbokne amput!")
 }
