@@ -5,6 +5,7 @@ import "os"
 type Config struct {
 	Port     string
 	ScanPath string
+	LogLevel string
 }
 
 func Load() Config {
@@ -18,8 +19,14 @@ func Load() Config {
 		path = "./data"
 	}
 
+	level := os.Getenv("LOG_LEVEL")
+	if level == "" {
+		level = "info"
+	}
+
 	return Config{
 		Port:     port,
 		ScanPath: path,
+		LogLevel: level,
 	}
 }
