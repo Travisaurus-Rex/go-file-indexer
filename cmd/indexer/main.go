@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,12 +11,13 @@ import (
 
 	"github.com/Travisaurus-Rex/go-file-indexer/internal/config"
 	"github.com/Travisaurus-Rex/go-file-indexer/internal/httpapi"
+	"github.com/Travisaurus-Rex/go-file-indexer/internal/logging"
 )
 
 func main() {
 	cfg := config.Load()
 
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	logger := logging.New(cfg.LogLevel)
 	logger.Info("configuration loaded", "port", cfg.Port, "scan_path", cfg.ScanPath)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
